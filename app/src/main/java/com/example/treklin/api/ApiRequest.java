@@ -13,14 +13,16 @@ public interface ApiRequest {
     @POST("login")
     Call<ResponseModel> login(
             @Field("email") String email,
-            @Field("password") String password
+            @Field("password") String password,
+            @Field("latitude") Double latitude,
+            @Field("longitude") Double longitude
     );
 
     @FormUrlEncoded
     @POST("register")
     Call<ResponseModel> registerUser(
-            @Field("email") String email,
             @Field("nama") String nama,
+            @Field("email") String email,
             @Field("password") String password
     );
 }
