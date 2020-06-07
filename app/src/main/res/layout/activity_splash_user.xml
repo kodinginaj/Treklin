@@ -9,7 +9,7 @@
     tools:context=".SplashUser">
 
     <ImageView
-        android:id="@+id/myimg"
+        android:id="@+id/myimggg"
         android:layout_width="564px"
         android:layout_height="199px"
         android:background="@drawable/logooo" />
