@@ -19,7 +19,7 @@ public class SplashUser extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_user);
 
-        img = findViewById(R.id.myimg);
+        img = findViewById(R.id.myimggg);
         img.animate().alpha(4000).setDuration(0);
 
         handler = new Handler();
