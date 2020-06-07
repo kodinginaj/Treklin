@@ -2,6 +2,7 @@ package com.example.treklin.api;
 
 import com.example.treklin.model.ResponseModel;
 import com.example.treklin.model.ResponseModelArticle;
+import com.example.treklin.model.ResponseModelOfficer;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -30,4 +31,7 @@ public interface ApiRequest {
 
     @GET("user/getArticle")
     Call<ResponseModelArticle> getArticle();
+
+    @GET("user/getOfficer")
+    Call<ResponseModelOfficer> getOfficer();
 }

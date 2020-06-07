@@ -1,33 +1,209 @@
 package com.example.treklin.ui.home;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import com.example.treklin.R;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class HomeFragment extends Fragment {
+import com.example.treklin.MainActivity;
+import com.example.treklin.R;
+import com.example.treklin.TrackingUser;
+import com.example.treklin.adapter.AdapterOfficer;
+import com.example.treklin.api.ApiRequest;
+import com.example.treklin.api.Retroserver;
+import com.example.treklin.model.OfficerModel;
+import com.example.treklin.model.ResponseModelOfficer;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import org.w3c.dom.Text;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     private HomeViewModel homeViewModel;
+    private TextView tvKoordinat;
+    private GoogleMap mMap;
+    private Double latitude, longitude;
+    private static final int MY_MAPS_REQUEST_CODE = 100;
+
+    private RecyclerView tampilOfficer;
+    private RecyclerView.LayoutManager layoutOfficer;
+    private RecyclerView.Adapter adapterOfficer;
+
+    private List<OfficerModel> listOfficer;
+    List<OfficerModel> itemOfficer = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-//        final TextView textView = root.findViewById(R.id.text_home);
-//        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
+
+        tvKoordinat = root.findViewById(R.id.tvKoordinat);
+
+        tampilOfficer = root.findViewById(R.id.tampilOfficer);
+        layoutOfficer = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        tampilOfficer.setLayoutManager(layoutOfficer);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+
+        FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getContext());
+        mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+
+                    String alamat = getAddress(latitude,longitude);
+
+                    tvKoordinat.setText("Latitude ="+latitude+" Longitude ="+longitude);
+                    refresh(1000);
+
+                    LatLng posisi = new LatLng(latitude, longitude);
+                    float zoomLevel = 16.0f;
+
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+
+                    //Api
+
+                    ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
+                    Call<ResponseModelOfficer> getOfficer = api.getOfficer();
+                    getOfficer.enqueue(new Callback<ResponseModelOfficer>() {
+                        @Override
+                        public void onResponse(Call<ResponseModelOfficer> call, Response<ResponseModelOfficer> response) {
+                            listOfficer = response.body().getOfficer();
+                            itemOfficer = response.body().getOfficer();
+
+                            for (int i=0;i<listOfficer.size();i++) {
+                                OfficerModel officer = listOfficer.get(i);
+
+                                double latitude = Double.parseDouble(officer.getLatitude());
+                                double longtitude = Double.parseDouble(officer.getLongitude());
+                                LatLng posisi = new LatLng(latitude, longtitude);
+
+//                                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.mapsicon);
+
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(posisi)
+                                        .title("Petugas"));
+                            }
+
+                            adapterOfficer = new AdapterOfficer(getContext(), itemOfficer);
+                            tampilOfficer.setAdapter(adapterOfficer);
+                            adapterOfficer.notifyDataSetChanged();
+                        }
+                        @Override
+                        public void onFailure(Call<ResponseModelOfficer> call, Throwable t) {
+                            Toast.makeText(getActivity(), "Koneksi Gagal", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+
         return root;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if(getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_MAPS_REQUEST_CODE);
+        }else {
+            mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    private void refresh(int milisecond){
+        final Handler handler = new Handler();
+
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("HEHE","Tes");
+
+                FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+                mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+
+                            latitude = location.getLatitude();
+                            longitude = location.getLongitude();
+
+                            tvKoordinat.setText("Latitude ="+latitude+" Longitude ="+longitude);
+
+                            LatLng posisi = new LatLng(latitude, longitude);
+                            float zoomLevel = 16.0f;
+
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+                        }
+                    }
+                });
+                refresh(1000);
+            }
+        };
+        handler.postDelayed(runnable,milisecond);
+    }
+
+    private String getAddress(double latitude, double longitude) {
+        StringBuilder result = new StringBuilder();
+        try {
+            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+                result.append(address.getAddressLine(0)).append("\n");
+                result.append(address.getLocality()).append("\n");
+                result.append(address.getCountryName());
+            }
+        } catch (IOException e) {
+            Log.e("tag", e.getMessage());
+        }
+
+        return result.toString();
     }
 }
