@@ -4,7 +4,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Retroserver {
-    private static final String base_url = "http://treklin.yukseminar.id/api/";
+    private static final String base_url = "https://treklin.yukseminar.id/api/";
+    String url = "https://treklin.yukseminar.id/";
 
     private static Retrofit retrofit;
 
@@ -16,6 +17,9 @@ public class Retroserver {
                     .build();
         }
         return retrofit;
+    }
+    public String url(){
+        return url;
     }
 
 }

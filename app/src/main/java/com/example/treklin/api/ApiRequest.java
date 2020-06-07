@@ -1,10 +1,12 @@
 package com.example.treklin.api;
 
 import com.example.treklin.model.ResponseModel;
+import com.example.treklin.model.ResponseModelArticle;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ApiRequest {
@@ -25,4 +27,7 @@ public interface ApiRequest {
             @Field("email") String email,
             @Field("password") String password
     );
+
+    @GET("user/getArticle")
+    Call<ResponseModelArticle> getArticle();
 }
