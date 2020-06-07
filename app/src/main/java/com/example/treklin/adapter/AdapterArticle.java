@@ -10,7 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.treklin.R;
+import com.example.treklin.api.Retroserver;
 import com.example.treklin.model.ArticleModel;
 
 import java.util.List;
@@ -19,6 +22,7 @@ public class AdapterArticle extends RecyclerView.Adapter<AdapterArticle.TampungD
 
     private Context ctx;
     private List<ArticleModel> listArticle;
+    Retroserver retroServer;
 
     public AdapterArticle(Context ctx, List<ArticleModel> listArticle){
         this.ctx = ctx;
@@ -28,16 +32,19 @@ public class AdapterArticle extends RecyclerView.Adapter<AdapterArticle.TampungD
     @NonNull
     @Override
     public TampungData onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_splash_user,parent,false);
+        View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_view,parent,false);
         TampungData tampungData = new TampungData(layout);
-
         return tampungData;
     }
 
     @Override
     public void onBindViewHolder(@NonNull AdapterArticle.TampungData holder, int position) {
         ArticleModel dataArticle = listArticle.get(position);
+        retroServer = new Retroserver();
+        holder.tvJudul.setText(dataArticle.getJudul());
 
+        Glide.with(ctx).load(retroServer.url()+dataArticle.getFoto())
+                .into(holder.iFoto);
         holder.dataArticle = dataArticle;
     }
 
@@ -48,11 +55,15 @@ public class AdapterArticle extends RecyclerView.Adapter<AdapterArticle.TampungD
 
     class TampungData extends RecyclerView.ViewHolder {
 
-        TextView tvJudul, tvPenulis, tvIsi;
+        private TextView tvJudul;
+        private ImageView iFoto;
         ArticleModel dataArticle;
 
         private TampungData(View v) {
             super(v);
+
+            tvJudul = (TextView)v.findViewById(R.id.tvJudulArticle);
+            iFoto = (ImageView) v.findViewById(R.id.Article_image);
 
         }
     }
