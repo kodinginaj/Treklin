@@ -103,8 +103,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
+
 
                 >
                 <TextView
@@ -112,7 +111,10 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/txtarticle"
                     android:text="Treklin Article"
+                    android:paddingLeft="30dp"
+                    android:paddingRight="30dp"
                     android:textSize="25dp"/>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
@@ -120,7 +122,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginBottom="10dp"
                     android:id="@+id/rvArticle"
-                    android:background="#f1f1f1"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
                     android:layout_marginTop="10dp">
 
 
