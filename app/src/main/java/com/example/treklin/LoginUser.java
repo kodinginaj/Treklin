@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.example.treklin.api.ApiRequest;
 import com.example.treklin.api.Retroserver;
 import com.example.treklin.model.ResponseModel;
+import com.example.treklin.model.UserModel;
+import com.example.treklin.util.Session;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,6 +39,7 @@ public class LoginUser extends Activity {
     private Double latitute, longitude;
     private Button btnLogin;
     private static final int MY_MAPS_REQUEST_CODE = 100;
+    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class LoginUser extends Activity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        session = new Session(LoginUser.this);
 
         TextView textView = findViewById(R.id.textregist);
         //test
@@ -97,20 +102,32 @@ public class LoginUser extends Activity {
 
                     ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
                     Call<ResponseModel> login = api.login(email, password, latitute, longitude);
+                    final ProgressDialog progressDialog;
+                    progressDialog = new ProgressDialog(LoginUser.this);
+                    progressDialog.setMessage("Mohon tunggu....");
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
                     login.enqueue(new Callback<ResponseModel>() {
                         @Override
                         public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                             if (response.body().getStatus().equals("1")) {
+                                UserModel userModel = response.body().getDataUser();
+                                session.setId(userModel.getId());
+                                session.setNama(userModel.getNama());
+                                session.setEmail(userModel.getEmail());
                                 Intent pindah = new Intent(LoginUser.this, MainActivity.class);
                                 startActivity(pindah);
+                                progressDialog.dismiss();
                             } else if (response.body().getStatus().equals("0")) {
                                 Toast.makeText(LoginUser.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseModel> call, Throwable t) {
                             Toast.makeText(LoginUser.this, "Koneksi Gagal", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
                         }
                     });
                 }

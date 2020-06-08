@@ -22,6 +22,7 @@ import com.example.treklin.api.ApiRequest;
 import com.example.treklin.api.Retroserver;
 import com.example.treklin.model.ArticleModel;
 import com.example.treklin.model.ResponseModelArticle;
+import com.example.treklin.util.Session;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Double latitude, longitude;
     private TextView tvKoordinat;
     private static final int MY_MAPS_REQUEST_CODE = 100;
+    Session session;
 
     Geocoder geocoder;
     List<Address> addresses;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        session = new Session(MainActivity.this);
 
 
         FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(MainActivity.this);
@@ -91,6 +94,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
                 }
             }
+        });
+
+        navigationView.getMenu().findItem(R.id.tracking).setOnMenuItemClickListener(menuItem -> {
+            Intent pindah = new Intent(MainActivity.this, TrackingUser.class);
+            startActivity(pindah);
+            return true;
         });
 
         navigationView.getMenu().findItem(R.id.logout).setOnMenuItemClickListener(menuItem -> {
@@ -132,8 +141,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                session.logout();
                 Intent pindah = new Intent(MainActivity.this, LoginUser.class);
                 startActivity(pindah);
+                finish();
             }
         });
         builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
