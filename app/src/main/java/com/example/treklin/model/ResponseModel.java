@@ -5,11 +5,17 @@ import java.util.List;
 public class ResponseModel {
 
     private String status, message;
-    private List<ArticleModel> listArticle;
+    private UserModel dataUser;
 
     public ResponseModel(String status, String message) {
         this.status = status;
         this.message = message;
+    }
+
+    public ResponseModel(String status, String message, UserModel dataUser) {
+        this.status = status;
+        this.message = message;
+        this.dataUser = dataUser;
     }
 
     public String getStatus() {
@@ -26,5 +32,13 @@ public class ResponseModel {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public UserModel getDataUser() {
+        return dataUser;
+    }
+
+    public void setDataUser(UserModel dataUser) {
+        this.dataUser = dataUser;
     }
 }
