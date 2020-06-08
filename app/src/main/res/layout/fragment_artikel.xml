@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.gallery.GalleryFragment" >
+
+    <TextView
+        android:id="@+id/text_judul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Judul Arikel"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textSize="30sp"
+         />
+
+    <TextView
+        android:id="@+id/text_penulis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Penulis Artikel"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textSize="15sp"
+        />
+
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:id="@+id/img_article"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_height="250dp"
+        android:src="@drawable/artikelexample" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/text_isi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="jdkjbcsdbc dicsdhbcsdh csdcbjsdhcbjsdh dhsbhjsbd asbdhjasbdhjadbashdbahsdbabdjahsbdsahdbahjsbdsbdajhsbd"
+            android:layout_marginTop="8dp"
+            android:textSize="15sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Artikel Lainnya"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:textSize="25dp"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_marginTop="10dp">
+
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
+
+
+
+</LinearLayout>
