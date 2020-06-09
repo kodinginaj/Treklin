@@ -58,7 +58,7 @@
             <RelativeLayout
                 android:layout_marginTop="30dp"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="250dp"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
                 >
@@ -73,7 +73,7 @@
                     android:id="@+id/map"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp" />
+                    android:layout_height="200dp" />
 
                 <LinearLayout
                     android:id="@+id/ketMap"
@@ -84,7 +84,7 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="10dp"
                     android:paddingTop="10dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="0dp"
                     >
                     <TextView
                         android:id="@+id/tvKoordinat"

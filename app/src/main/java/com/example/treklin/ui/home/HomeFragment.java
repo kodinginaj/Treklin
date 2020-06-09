@@ -14,11 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -46,6 +48,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.Text;
@@ -106,7 +109,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                     String alamat = getAddress(latitude,longitude);
 
-                    tvKoordinat.setText("Latitude ="+latitude+" Longitude ="+longitude);
+                    tvKoordinat.setText(alamat);
                     refresh(1000);
 
                     LatLng posisi = new LatLng(latitude, longitude);
@@ -205,7 +208,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
 
-                            tvKoordinat.setText("Latitude ="+latitude+" Longitude ="+longitude);
+                            String alamat = getAddress(latitude,longitude);
+                            tvKoordinat.setText(alamat);
 
                             LatLng posisi = new LatLng(latitude, longitude);
                             float zoomLevel = 16.0f;
@@ -233,9 +237,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
-                result.append(address.getAddressLine(0)).append("\n");
-                result.append(address.getLocality()).append("\n");
-                result.append(address.getCountryName());
+                result.append(address.getThoroughfare());
             }
         } catch (IOException e) {
             Log.e("tag", e.getMessage());

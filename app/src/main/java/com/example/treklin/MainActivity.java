@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     String alamat = getAddress(latitude,longitude);
                     session.setAlamat(alamat);
 
-                    tvKoordinat.setText("Alamat = "+alamat);
+                    tvKoordinat.setText(alamat);
 //                    refresh(1000);
 
                     LatLng posisi = new LatLng(latitude, longitude);
@@ -217,9 +217,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
-                result.append(address.getAddressLine(0)).append("\n");
-                result.append(address.getLocality()).append("\n");
-                result.append(address.getCountryName());
+                result.append(address.getThoroughfare());
             }
         } catch (IOException e) {
             Log.e("tag", e.getMessage());

@@ -7,32 +7,32 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="85dp"
+        android:layout_height="70dp"
         android:layout_margin="4dp"
         >
 
         <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginRight="5dp"
-            android:layout_toStartOf="@id/btn_komplain"
+            android:layout_toStartOf="@id/btnKomplain"
             android:background="@drawable/ic_mark2"
             />
 
         <Button
-            android:id="@+id/btn_komplain"
+            android:id="@+id/btnKomplain"
             android:layout_width="90dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:background="@color/colorPrimary"
             android:textColor="#ffffff"
-            android:text="Komlpain" />
+            android:text="Komplain" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nama"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_alignParentTop="true"
             android:id="@+id/etNama"
             android:textColor="#000000"/>
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Jarak"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_below="@id/etNama"
             android:textColor="#000000"/>
 
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Peralatan"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_below="@id/etJarak"
 
             android:textColor="#000000"/>

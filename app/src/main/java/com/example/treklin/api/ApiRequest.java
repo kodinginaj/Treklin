@@ -34,4 +34,12 @@ public interface ApiRequest {
 
     @GET("user/getOfficer")
     Call<ResponseModelOfficer> getOfficer();
+
+    @FormUrlEncoded
+    @POST("user/userComplaint")
+    Call<ResponseModel> userComplaint(
+            @Field("userid") String userid,
+            @Field("officerid") String officerid,
+            @Field("complaint") String complaint
+    );
 }
