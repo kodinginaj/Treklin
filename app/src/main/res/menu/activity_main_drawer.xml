@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
         <item
 
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_username"
             android:title="Nama Pengguna" />
 
         <item
@@ -15,7 +15,7 @@
             android:title="Tanggal Waktu" />
         <item
 
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon=""
             android:title="Lokasi Saya" />
 
 
