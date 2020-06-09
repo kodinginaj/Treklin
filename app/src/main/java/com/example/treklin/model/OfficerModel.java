@@ -2,8 +2,9 @@ package com.example.treklin.model;
 
 public class OfficerModel {
     String id, nama, email, password, kendaraan, peralatan, latitude, longitude, created_at, updated_at;
+    Float jarak;
 
-    public OfficerModel(String id, String nama, String email, String password, String kendaraan, String peralatan, String latitude, String longitude, String created_at, String updated_at) {
+    public OfficerModel(String id, String nama, String email, String password, String kendaraan, String peralatan, String latitude, String longitude, String created_at, String updated_at, Float jarak) {
         this.id = id;
         this.nama = nama;
         this.email = email;
@@ -14,6 +15,7 @@ public class OfficerModel {
         this.longitude = longitude;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.jarak = jarak;
     }
 
     public String getId() {
@@ -94,5 +96,13 @@ public class OfficerModel {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public Float getJarak() {
+        return jarak;
+    }
+
+    public void setJarak(Float jarak) {
+        this.jarak = jarak;
     }
 }
