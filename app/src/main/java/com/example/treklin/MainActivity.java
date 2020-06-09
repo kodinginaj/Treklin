@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerView.LayoutManager mManager;
     private List<ArticleModel> mItems = new ArrayList<>();
     private GoogleMap mMap;
+    private ScrollView scrollView;
     private Double latitude, longitude;
     private TextView tvKoordinat;
     private static final int MY_MAPS_REQUEST_CODE = 100;
@@ -96,8 +98,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        navigationView.getMenu().findItem(R.id.artikel).setOnMenuItemClickListener(menuItem -> {
+            View targetView = findViewById(R.id.rvArticle);
+            scrollView.smoothScrollTo(10,(int)targetView.getBottom());
+            return true;
+        });
+
         navigationView.getMenu().findItem(R.id.tracking).setOnMenuItemClickListener(menuItem -> {
             Intent pindah = new Intent(MainActivity.this, TrackingUser.class);
+            pindah.putExtra("halaman", "tracking");
             startActivity(pindah);
             return true;
         });
@@ -107,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return true;
         });
 
+        scrollView = findViewById(R.id.scrollViewMain);
         recyclerView = findViewById(R.id.rvArticle);
         mManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(mManager);
@@ -131,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(MainActivity.this, "Ada kesalahan koneksi",Toast.LENGTH_SHORT).show();
             }
         });
+
 
     }
 
@@ -171,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onMapClick(LatLng latLng) {
                 Intent pindah = new Intent(MainActivity.this, TrackingUser.class);
+                pindah.putExtra("halaman", "tracking");
                 startActivity(pindah);
             }
         });

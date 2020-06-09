@@ -1,5 +1,6 @@
 package com.example.treklin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
@@ -9,7 +10,10 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.NavGraph;
+import androidx.navigation.NavInflater;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -17,7 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 public class TrackingUser extends AppCompatActivity {
-
+    private String halaman;
+    public String id;
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
@@ -39,6 +44,10 @@ public class TrackingUser extends AppCompatActivity {
             }
         });
 
+        Intent i = getIntent();
+        halaman = i.getStringExtra("halaman");
+        id = i.getStringExtra("id");
+
 //        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -57,9 +66,26 @@ public class TrackingUser extends AppCompatActivity {
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
                 .setDrawerLayout(drawer)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+////        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+//        NavigationUI.setupWithNavController(navigationView, navController);
+
+
+        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavController navController = navHost.getNavController();
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        NavInflater navInflater = navController.getNavInflater();
+        NavGraph graph = navInflater.inflate(R.navigation.mobile_navigation);
+        graph.setStartDestination(R.id.nav_gallery);
+
+        if (halaman.equals("tracking")) {
+            graph.setStartDestination(R.id.nav_home);
+        } else {
+            graph.setStartDestination(R.id.nav_gallery);
+        }
+
+        navController.setGraph(graph);
     }
 
     @Override

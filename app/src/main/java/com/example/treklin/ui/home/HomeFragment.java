@@ -105,8 +105,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     float zoomLevel = 16.0f;
 
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
-
-                    //Api
+                    
 
                     ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
                     Call<ResponseModelOfficer> getOfficer = api.getOfficer();
