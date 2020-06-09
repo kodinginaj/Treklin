@@ -1,6 +1,7 @@
 package com.example.treklin.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.treklin.MainActivity;
 import com.example.treklin.R;
+import com.example.treklin.TrackingUser;
 import com.example.treklin.api.Retroserver;
 import com.example.treklin.model.ArticleModel;
 
@@ -64,6 +67,17 @@ public class AdapterArticle extends RecyclerView.Adapter<AdapterArticle.TampungD
 
             tvJudul = (TextView)v.findViewById(R.id.tvJudulArticle);
             iFoto = (ImageView) v.findViewById(R.id.Article_image);
+
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ArticleModel articleModel = listArticle.get(getAdapterPosition());
+                    Intent pindah = new Intent(ctx, TrackingUser.class);
+                    pindah.putExtra("halaman", "article");
+                    pindah.putExtra("id", articleModel.getId());
+                    ctx.startActivity(pindah);
+                }
+            });
 
         }
     }

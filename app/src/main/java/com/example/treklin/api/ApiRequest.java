@@ -29,6 +29,12 @@ public interface ApiRequest {
             @Field("password") String password
     );
 
+    @FormUrlEncoded
+    @POST("user/getDetailArticle")
+    Call<ResponseModelArticle> getDetailArticle(
+            @Field("id") String id
+    );
+
     @GET("user/getArticle")
     Call<ResponseModelArticle> getArticle();
 
