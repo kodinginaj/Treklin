@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     longitude = location.getLongitude();
 
                     String alamat = getAddress(latitude,longitude);
+                    session.setAlamat(alamat);
 
                     tvKoordinat.setText("Alamat = "+alamat);
 //                    refresh(1000);
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(MainActivity.this, "Ada kesalahan koneksi",Toast.LENGTH_SHORT).show();
             }
         });
+
 
     }
 
@@ -202,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     }
                 });
-                refresh(1000);
+                refresh(5000);
             }
         };
         handler.postDelayed(runnable,milisecond);

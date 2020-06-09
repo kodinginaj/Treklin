@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import com.example.treklin.api.ApiRequest;
 import com.example.treklin.api.Retroserver;
 import com.example.treklin.model.OfficerModel;
 import com.example.treklin.model.ResponseModelOfficer;
+import com.example.treklin.util.Session;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,11 +46,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,13 +68,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private Double latitude, longitude;
     private static final int MY_MAPS_REQUEST_CODE = 100;
+    Handler handler;
 
     private RecyclerView tampilOfficer;
     private RecyclerView.LayoutManager layoutOfficer;
     private RecyclerView.Adapter adapterOfficer;
 
     private List<OfficerModel> listOfficer;
-    List<OfficerModel> itemOfficer = new ArrayList<>();
+    private List<OfficerModel> itemOfficer = new ArrayList<>();
+    private Session session;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
@@ -128,7 +136,29 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                 mMap.addMarker(new MarkerOptions()
                                         .position(posisi)
                                         .title("Petugas"));
+
+                                //Set ke getJarak()
+
+                                session = new Session(getContext());
+                                Location startPoint=new Location("locationA");
+                                startPoint.setLatitude(Double.parseDouble(session.getLatitude()));
+                                startPoint.setLongitude(Double.parseDouble(session.getLongitude()));
+
+                                Location endPoint=new Location("locationB");
+                                endPoint.setLatitude(latitude);
+                                endPoint.setLongitude(longtitude);
+
+                                Float distance = startPoint.distanceTo(endPoint)/1000;
+
+                                itemOfficer.get(i).setJarak(distance);
                             }
+
+                            Collections.sort(itemOfficer, new Comparator<OfficerModel>() {
+                                @Override
+                                public int compare(OfficerModel mitraModel, OfficerModel t1) {
+                                    return mitraModel.getJarak().compareTo(t1.getJarak());
+                                }
+                            });
 
                             adapterOfficer = new AdapterOfficer(getContext(), itemOfficer);
                             tampilOfficer.setAdapter(adapterOfficer);
@@ -157,8 +187,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
     private void refresh(int milisecond){
-        final Handler handler = new Handler();
+        handler = new Handler();
 
         final Runnable runnable = new Runnable() {
             @Override
@@ -183,10 +214,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
                 });
-                refresh(1000);
+                refresh(5000);
             }
         };
         handler.postDelayed(runnable,milisecond);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        handler.removeCallbacksAndMessages(null);
     }
 
     private String getAddress(double latitude, double longitude) {

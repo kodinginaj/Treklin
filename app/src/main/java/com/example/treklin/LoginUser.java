@@ -36,7 +36,7 @@ import retrofit2.Response;
 public class LoginUser extends Activity {
 
     private EditText etEmail, etPassword;
-    private Double latitute, longitude;
+    private Double latitude, longitude;
     private Button btnLogin;
     private static final int MY_MAPS_REQUEST_CODE = 100;
     Session session;
@@ -56,7 +56,7 @@ public class LoginUser extends Activity {
             public void onSuccess(Location location) {
                 if (location != null) {
 
-                    latitute = location.getLatitude();
+                    latitude = location.getLatitude();
                     longitude = location.getLongitude();
                 }
             }
@@ -101,7 +101,7 @@ public class LoginUser extends Activity {
                 if (!email.isEmpty() && !password.isEmpty()) {
 
                     ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
-                    Call<ResponseModel> login = api.login(email, password, latitute, longitude);
+                    Call<ResponseModel> login = api.login(email, password, latitude, longitude);
                     final ProgressDialog progressDialog;
                     progressDialog = new ProgressDialog(LoginUser.this);
                     progressDialog.setMessage("Mohon tunggu....");
@@ -115,6 +115,8 @@ public class LoginUser extends Activity {
                                 session.setId(userModel.getId());
                                 session.setNama(userModel.getNama());
                                 session.setEmail(userModel.getEmail());
+                                session.setLatitude(userModel.getLatitude());
+                                session.setLongitude(userModel.getLongitude());
                                 Intent pindah = new Intent(LoginUser.this, MainActivity.class);
                                 startActivity(pindah);
                                 progressDialog.dismiss();

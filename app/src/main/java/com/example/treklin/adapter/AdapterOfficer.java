@@ -1,6 +1,7 @@
 package com.example.treklin.adapter;
 
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.treklin.R;
 import com.example.treklin.model.ArticleModel;
 import com.example.treklin.model.OfficerModel;
+import com.example.treklin.util.Session;
 
 import org.w3c.dom.Text;
 
@@ -22,6 +24,8 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
 
     private Context ctx;
     private List<OfficerModel> listOfficer;
+    private String jarakDigit;
+    private Session session;
 
     public AdapterOfficer(Context ctx, List<OfficerModel> listOfficer){
         this.ctx = ctx;
@@ -41,10 +45,26 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
     public void onBindViewHolder(@NonNull TampungData holder, int position) {
 
         OfficerModel dataOfficer = listOfficer.get(position);
-        holder.etNama.setText(dataOfficer.getNama());
-        holder.etJarak.setText("0 KM");
-        holder.etPeralatan.setText(dataOfficer.getPeralatan());
 
+        session = new Session(ctx);
+        Location startPoint=new Location("locationA");
+        startPoint.setLatitude(Double.parseDouble(session.getLatitude()));
+        startPoint.setLongitude(Double.parseDouble(session.getLongitude()));
+
+        Location endPoint=new Location("locationB");
+        endPoint.setLatitude(Double.parseDouble(dataOfficer.getLatitude()));
+        endPoint.setLongitude(Double.parseDouble(dataOfficer.getLongitude()));
+
+        float distance = startPoint.distanceTo(endPoint)/1000;
+        if(distance<10) {
+            jarakDigit = Double.toString(distance).substring(0, 4);
+        }else{
+            jarakDigit = Double.toString(distance).substring(0, 5);
+        }
+
+        holder.etNama.setText(dataOfficer.getNama());
+        holder.etJarak.setText(jarakDigit+" KM");
+        holder.etPeralatan.setText(dataOfficer.getPeralatan());
         holder.dataOfficer = dataOfficer;
     }
 
