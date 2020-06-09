@@ -25,6 +25,12 @@ public class Session {
 
     public void setEmail(String email) { sharedPreferences.edit().putString("email",email).apply(); }
 
+    public void setLatitude(String latitude) { sharedPreferences.edit().putString("latitude",latitude).apply(); }
+
+    public void setLongitude(String longitude) { sharedPreferences.edit().putString("longitude",longitude).apply(); }
+
+    public void setAlamat(String alamat) { sharedPreferences.edit().putString("alamat",alamat).apply(); }
+
     public String getId()
     {
         return sharedPreferences.getString("id",null);
@@ -40,6 +46,20 @@ public class Session {
         return sharedPreferences.getString("nama",null);
     }
 
+    public String getLatitude()
+    {
+        return sharedPreferences.getString("latitude",null);
+    }
+
+    public String getLongitude()
+    {
+        return sharedPreferences.getString("longitude",null);
+    }
+
+    public String getAlamat()
+    {
+        return sharedPreferences.getString("alamat",null);
+    }
 
     public void logout()
     {
