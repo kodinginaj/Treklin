@@ -137,7 +137,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                                 mMap.addMarker(new MarkerOptions()
                                         .position(posisi)
-                                        .title("Petugas"));
+                                        .title(officer.getNama()));
 
                                 //Set ke getJarak()
 

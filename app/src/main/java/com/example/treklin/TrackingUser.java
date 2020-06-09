@@ -1,5 +1,6 @@
 package com.example.treklin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
@@ -35,6 +37,7 @@ public class TrackingUser extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private Session session;
     Locale localeID = new Locale("in", "ID");
+    private TextView logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,32 @@ public class TrackingUser extends AppCompatActivity {
         //Ubah 3 Item Drawer Nama
         session = new Session(TrackingUser.this);
 
+        logout = findViewById(R.id.logoutDrawer);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(TrackingUser.this);
+                builder.setCancelable(false);
+                builder.setMessage("Apakah anda yakin untuk logout?");
+                builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        session.logout();
+                        Intent pindah = new Intent(TrackingUser.this, LoginUser.class);
+                        startActivity(pindah);
+                        finish();
+                    }
+                });
+                builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy (HH:mm)", localeID);
 
         String currentDateandTime = sdf.format(new Date());

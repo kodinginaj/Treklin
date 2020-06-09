@@ -136,11 +136,13 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
                         @Override
                         public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                             Toast.makeText(ctx, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
                         }
 
                         @Override
                         public void onFailure(Call<ResponseModel> call, Throwable t) {
                             Toast.makeText(ctx, "Koneksi Gagal", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
                         }
                     });
                 }
