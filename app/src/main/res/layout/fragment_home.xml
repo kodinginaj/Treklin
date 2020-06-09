@@ -12,21 +12,29 @@
         android:layout_weight="70"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:background="#ddd">
+        android:orientation="vertical">
 
-        <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="390dp" />
+            android:layout_height="wrap_content">
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
 
         <LinearLayout
+            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_gravity="bottom"
             android:orientation="vertical"
+            android:layout_gravity="bottom"
             android:background="#f1f1f1">
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -36,6 +44,7 @@
                 android:id="@+id/tvKoordinat"
                 android:layout_height="match_parent"/>
         </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 
