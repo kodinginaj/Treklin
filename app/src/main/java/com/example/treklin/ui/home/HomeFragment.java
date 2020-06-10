@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -82,7 +83,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private Session session;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -98,82 +99,88 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
 
-        FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getContext());
-        mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
+        FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
+        }else{
+            mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
 
-                    String alamat = getAddress(latitude,longitude);
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
 
-                    tvKoordinat.setText(alamat);
-                    refresh(1000);
+                        String alamat = getAddress(latitude, longitude);
 
-                    LatLng posisi = new LatLng(latitude, longitude);
-                    float zoomLevel = 16.0f;
+                        tvKoordinat.setText(alamat);
+                        refresh(1000);
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
-                    
+                        LatLng posisi = new LatLng(latitude, longitude);
+                        float zoomLevel = 16.0f;
 
-                    ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
-                    Call<ResponseModelOfficer> getOfficer = api.getOfficer();
-                    getOfficer.enqueue(new Callback<ResponseModelOfficer>() {
-                        @Override
-                        public void onResponse(Call<ResponseModelOfficer> call, Response<ResponseModelOfficer> response) {
-                            listOfficer = response.body().getOfficer();
-                            itemOfficer = response.body().getOfficer();
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
 
-                            for (int i=0;i<listOfficer.size();i++) {
-                                OfficerModel officer = listOfficer.get(i);
 
-                                double latitude = Double.parseDouble(officer.getLatitude());
-                                double longtitude = Double.parseDouble(officer.getLongitude());
-                                LatLng posisi = new LatLng(latitude, longtitude);
+                        ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
+                        Call<ResponseModelOfficer> getOfficer = api.getOfficer();
+                        getOfficer.enqueue(new Callback<ResponseModelOfficer>() {
+                            @Override
+                            public void onResponse(Call<ResponseModelOfficer> call, Response<ResponseModelOfficer> response) {
+                                listOfficer = response.body().getOfficer();
+                                itemOfficer = response.body().getOfficer();
+
+                                for (int i = 0; i < listOfficer.size(); i++) {
+                                    OfficerModel officer = listOfficer.get(i);
+
+                                    double latitude = Double.parseDouble(officer.getLatitude());
+                                    double longtitude = Double.parseDouble(officer.getLongitude());
+                                    LatLng posisi = new LatLng(latitude, longtitude);
 
 //                                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.mapsicon);
 
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(posisi)
-                                        .title(officer.getNama()));
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(posisi)
+                                            .title(officer.getNama()));
 
-                                //Set ke getJarak()
+                                    //Set ke getJarak()
 
-                                session = new Session(getContext());
-                                Location startPoint=new Location("locationA");
-                                startPoint.setLatitude(Double.parseDouble(session.getLatitude()));
-                                startPoint.setLongitude(Double.parseDouble(session.getLongitude()));
+                                    session = new Session(getContext());
+                                    Location startPoint = new Location("locationA");
+                                    startPoint.setLatitude(Double.parseDouble(session.getLatitude()));
+                                    startPoint.setLongitude(Double.parseDouble(session.getLongitude()));
 
-                                Location endPoint=new Location("locationB");
-                                endPoint.setLatitude(latitude);
-                                endPoint.setLongitude(longtitude);
+                                    Location endPoint = new Location("locationB");
+                                    endPoint.setLatitude(latitude);
+                                    endPoint.setLongitude(longtitude);
 
-                                Float distance = startPoint.distanceTo(endPoint)/1000;
+                                    Float distance = startPoint.distanceTo(endPoint) / 1000;
 
-                                itemOfficer.get(i).setJarak(distance);
+                                    itemOfficer.get(i).setJarak(distance);
+                                }
+
+                                Collections.sort(itemOfficer, new Comparator<OfficerModel>() {
+                                    @Override
+                                    public int compare(OfficerModel mitraModel, OfficerModel t1) {
+                                        return mitraModel.getJarak().compareTo(t1.getJarak());
+                                    }
+                                });
+
+                                adapterOfficer = new AdapterOfficer(getContext(), itemOfficer);
+                                tampilOfficer.setAdapter(adapterOfficer);
+                                adapterOfficer.notifyDataSetChanged();
                             }
 
-                            Collections.sort(itemOfficer, new Comparator<OfficerModel>() {
-                                @Override
-                                public int compare(OfficerModel mitraModel, OfficerModel t1) {
-                                    return mitraModel.getJarak().compareTo(t1.getJarak());
-                                }
-                            });
-
-                            adapterOfficer = new AdapterOfficer(getContext(), itemOfficer);
-                            tampilOfficer.setAdapter(adapterOfficer);
-                            adapterOfficer.notifyDataSetChanged();
-                        }
-                        @Override
-                        public void onFailure(Call<ResponseModelOfficer> call, Throwable t) {
-                            Toast.makeText(getActivity(), "Koneksi Gagal", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseModelOfficer> call, Throwable t) {
+                                Toast.makeText(getActivity(), "Koneksi Gagal", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
+
 
         return root;
     }
@@ -182,41 +189,45 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if(getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_MAPS_REQUEST_CODE);
-        }else {
+        } else {
             mMap.setMyLocationEnabled(true);
         }
     }
 
 
-    private void refresh(int milisecond){
+    private void refresh(int milisecond) {
         handler = new Handler();
 
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Log.d("HEHE","Tes");
+                Log.d("HEHE", "Tes");
 
                 FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
-                mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
 
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                                session.setLatitude(latitude.toString());
+                                session.setLongitude(longitude.toString());
+                                String alamat = getAddress(latitude, longitude);
+                                tvKoordinat.setText(alamat);
 
-                            String alamat = getAddress(latitude,longitude);
-                            tvKoordinat.setText(alamat);
+                                LatLng posisi = new LatLng(latitude, longitude);
+                                float zoomLevel = 16.0f;
 
-                            LatLng posisi = new LatLng(latitude, longitude);
-                            float zoomLevel = 16.0f;
-
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+                            }
                         }
-                    }
-                });
+                    });
+                }
+
                 refresh(5000);
             }
         };

@@ -15,7 +15,7 @@
             android:title="Tanggal Waktu" />
         <item
 
-            android:icon=""
+            android:icon="@drawable/ic_map"
             android:title="Lokasi Saya" />
 
 
