@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
@@ -77,31 +78,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-        mFusedLocation.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
+        }else{
+            mFusedLocation.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
 
-                    String alamat = getAddress(latitude,longitude);
-                    session.setAlamat(alamat);
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
 
-                    tvKoordinat.setText(alamat);
+                        String alamat = getAddress(latitude, longitude);
+                        session.setAlamat(alamat);
+
+                        tvKoordinat.setText(alamat);
 //                    refresh(1000);
 
-                    LatLng posisi = new LatLng(latitude, longitude);
-                    float zoomLevel = 16.0f;
+                        LatLng posisi = new LatLng(latitude, longitude);
+                        float zoomLevel = 16.0f;
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+                    }
                 }
-            }
-        });
+            });
+        }
+
 
         navigationView.getMenu().findItem(R.id.artikel).setOnMenuItemClickListener(menuItem -> {
             View targetView = findViewById(R.id.rvArticle);
-            scrollView.smoothScrollTo(10,(int)targetView.getBottom());
+            scrollView.smoothScrollTo(10, (int) targetView.getBottom());
             return true;
         });
 
@@ -128,18 +134,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onResponse(Call<ResponseModelArticle> call, Response<ResponseModelArticle> response) {
                 mItems = response.body().getData();
-                if (mItems.size() > 0){
+                if (mItems.size() > 0) {
                     mAdapter = new AdapterArticle(MainActivity.this, mItems);
                     recyclerView.setAdapter(mAdapter);
                     mAdapter.notifyDataSetChanged();
-                }else {
-                    Toast.makeText(MainActivity.this, response.body().getMessage(),Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseModelArticle> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Ada kesalahan koneksi",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Ada kesalahan koneksi", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -173,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_MAPS_REQUEST_CODE);
-        }else {
+        } else {
             mMap.setMyLocationEnabled(true);
         }
 
@@ -189,37 +195,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void refresh(int milisecond){
-        final Handler handler = new Handler();
-
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                Log.d("HEHE","Tes");
-
-                FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-                mFusedLocation.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-
-                            tvKoordinat.setText("Latitude ="+latitude+" Longitude ="+longitude);
-
-                            LatLng posisi = new LatLng(latitude, longitude);
-                            float zoomLevel = 16.0f;
-
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
-                        }
-                    }
-                });
-                refresh(5000);
-            }
-        };
-        handler.postDelayed(runnable,milisecond);
-    }
+//    private void refresh(int milisecond) {
+//        final Handler handler = new Handler();
+//
+//        final Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d("HEHE", "Tes");
+//
+//                FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+//                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    mFusedLocation.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+//                        @Override
+//                        public void onSuccess(Location location) {
+//                            if (location != null) {
+//
+//                                latitude = location.getLatitude();
+//                                longitude = location.getLongitude();
+//
+//                                tvKoordinat.setText("Latitude =" + latitude + " Longitude =" + longitude);
+//
+//                                LatLng posisi = new LatLng(latitude, longitude);
+//                                float zoomLevel = 16.0f;
+//
+//                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+//                            }
+//                        }
+//                    });
+//                }
+//
+//                refresh(5000);
+//            }
+//        };
+//        handler.postDelayed(runnable,milisecond);
+//    }
 
     private String getAddress(double latitude, double longitude) {
         StringBuilder result = new StringBuilder();

@@ -46,6 +46,9 @@ public interface ApiRequest {
     Call<ResponseModel> userComplaint(
             @Field("userid") String userid,
             @Field("officerid") String officerid,
-            @Field("complaint") String complaint
+            @Field("complaint") String complaint,
+            @Field("latitude") String latitude,
+            @Field("longitude") String longitude
+
     );
 }

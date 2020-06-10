@@ -131,7 +131,7 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
                     String id_user = session.getId();
 
                     ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
-                    Call<ResponseModel> userComplaint = api.userComplaint(id_user,dataOfficer.getId(),komplain.getText().toString());
+                    Call<ResponseModel> userComplaint = api.userComplaint(id_user,dataOfficer.getId(),komplain.getText().toString(), session.getLatitude(),session.getLongitude());
                     userComplaint.enqueue(new Callback<ResponseModel>() {
                         @Override
                         public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
