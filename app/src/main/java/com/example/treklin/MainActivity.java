@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         navigationView.getMenu().findItem(R.id.artikel).setOnMenuItemClickListener(menuItem -> {
-            View targetView = findViewById(R.id.rvArticle);
+            View targetView = findViewById(R.id.txtarticle);
             scrollView.smoothScrollTo(10, (int) targetView.getBottom());
             return true;
         });
