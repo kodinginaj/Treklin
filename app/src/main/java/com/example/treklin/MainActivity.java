@@ -118,6 +118,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return true;
         });
 
+        navigationView.getMenu().findItem(R.id.home).setOnMenuItemClickListener(menuItem -> {
+            Intent pindah = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(pindah);
+            finish();
+            return true;
+        });
+
         navigationView.getMenu().findItem(R.id.logout).setOnMenuItemClickListener(menuItem -> {
             confirmLogout();
             return true;
