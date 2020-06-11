@@ -3,6 +3,8 @@ package com.example.treklin.ui.home;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -81,6 +83,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private List<OfficerModel> listOfficer;
     private List<OfficerModel> itemOfficer = new ArrayList<>();
     private Session session;
+    private List<Marker> listMarker;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -93,17 +96,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         tampilOfficer = root.findViewById(R.id.tampilOfficer);
         layoutOfficer = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         tampilOfficer.setLayoutManager(layoutOfficer);
+        session = new Session(getContext());
+        listMarker = new ArrayList<>();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        zoomMaps();
+        officer();
 
-        FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+
+
+
+        return root;
+    }
+
+    public void zoomMaps(){
+        FusedLocationProviderClient mmFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        }else{
-            mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+        }else {
+            mmFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
@@ -112,15 +126,41 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         longitude = location.getLongitude();
 
                         String alamat = getAddress(latitude, longitude);
-
                         tvKoordinat.setText(alamat);
-                        refresh(1000);
 
                         LatLng posisi = new LatLng(latitude, longitude);
                         float zoomLevel = 16.0f;
-
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
+                        refresh(10000);
 
+                    }
+                }
+            });
+        }
+    }
+
+    public void officer(){
+        FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        }else{
+            mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        if(listMarker!= null){
+                            if (listMarker.size()>0){
+                                for (int i = 0; i < listMarker.size(); i++){
+                                    listMarker.get(i).remove();
+                                }
+                            }
+
+                        }
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+
+                        session.setLatitude(latitude.toString());
+                        session.setLongitude(longitude.toString());
 
                         ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
                         Call<ResponseModelOfficer> getOfficer = api.getOfficer();
@@ -138,14 +178,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                     LatLng posisi = new LatLng(latitude, longtitude);
 
 //                                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.mapsicon);
+                                    int height = 100;
+                                    int width = 100;
+                                    BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.drawable.marker2);
+                                    Bitmap b = bitmapdraw.getBitmap();
+                                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                                    mMap.addMarker(new MarkerOptions()
-                                            .position(posisi)
-                                            .title(officer.getNama()));
+                                    listMarker.add( mMap.addMarker(new MarkerOptions()
+                                            .position(posisi).icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                                            .title(officer.getNama())));
 
                                     //Set ke getJarak()
 
-                                    session = new Session(getContext());
+
                                     Location startPoint = new Location("locationA");
                                     startPoint.setLatitude(Double.parseDouble(session.getLatitude()));
                                     startPoint.setLongitude(Double.parseDouble(session.getLongitude()));
@@ -158,6 +203,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                                     itemOfficer.get(i).setJarak(distance);
                                 }
+
 
                                 Collections.sort(itemOfficer, new Comparator<OfficerModel>() {
                                     @Override
@@ -180,9 +226,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
         }
-
-
-        return root;
     }
 
     @Override
@@ -203,32 +246,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Log.d("HEHE", "Tes");
-
-                FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(getActivity());
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                                session.setLatitude(latitude.toString());
-                                session.setLongitude(longitude.toString());
-                                String alamat = getAddress(latitude, longitude);
-                                tvKoordinat.setText(alamat);
-
-                                LatLng posisi = new LatLng(latitude, longitude);
-                                float zoomLevel = 16.0f;
-
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posisi, zoomLevel));
-                            }
-                        }
-                    });
-                }
-
-                refresh(5000);
+                officer();
+                refresh(milisecond);
             }
         };
         handler.postDelayed(runnable,milisecond);

@@ -2,6 +2,7 @@ package com.example.treklin.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +75,15 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
         endPoint.setLongitude(Double.parseDouble(dataOfficer.getLongitude()));
 
         float distance = startPoint.distanceTo(endPoint)/1000;
+
+        if (distance>1){
+            Drawable myDrawable = ctx.getResources().getDrawable(R.drawable.ic_bookmarksecond);
+            holder.ivBookmark.setImageDrawable(myDrawable);
+        }else{
+            Drawable myDrawable = ctx.getResources().getDrawable(R.drawable.ic_bookmarkprimary);
+            holder.ivBookmark.setImageDrawable(myDrawable);
+        }
+
         if(distance<10) {
             jarakDigit = Double.toString(distance).substring(0, 4);
         }else{
@@ -96,6 +106,7 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
 
         TextView etNama, etJarak, etPeralatan;
         OfficerModel dataOfficer;
+        ImageView ivBookmark;
 
         private TampungData(View v) {
             super(v);
@@ -103,6 +114,7 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
             etNama = v.findViewById(R.id.etNama);
             etJarak = v.findViewById(R.id.etJarak);
             etPeralatan = v.findViewById(R.id.etPeralatan);
+            ivBookmark = v.findViewById(R.id.bookmark);
 
             btnKomplain = v.findViewById(R.id.btnKomplain);
 
@@ -123,28 +135,33 @@ public class AdapterOfficer extends RecyclerView.Adapter<AdapterOfficer.TampungD
 
             EditText komplain = dialogView.findViewById(R.id.etKomplain);
 
+
+
             dialog.setPositiveButton("LAPOR", new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Session session = new Session(ctx);
                     String id_user = session.getId();
+                    if (!komplain.getText().toString().isEmpty()){
+                        ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
+                        Call<ResponseModel> userComplaint = api.userComplaint(id_user,dataOfficer.getId(),komplain.getText().toString(), session.getLatitude(),session.getLongitude());
+                        userComplaint.enqueue(new Callback<ResponseModel>() {
+                            @Override
+                            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                                Toast.makeText(ctx, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
 
-                    ApiRequest api = Retroserver.getClient().create(ApiRequest.class);
-                    Call<ResponseModel> userComplaint = api.userComplaint(id_user,dataOfficer.getId(),komplain.getText().toString(), session.getLatitude(),session.getLongitude());
-                    userComplaint.enqueue(new Callback<ResponseModel>() {
-                        @Override
-                        public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
-                            Toast.makeText(ctx, response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        }
+                            @Override
+                            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                                Toast.makeText(ctx, "Koneksi Gagal", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        });
+                    }
 
-                        @Override
-                        public void onFailure(Call<ResponseModel> call, Throwable t) {
-                            Toast.makeText(ctx, "Koneksi Gagal", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        }
-                    });
+
                 }
             });
 
